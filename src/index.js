@@ -14,6 +14,8 @@ const {
 
 const app = express();
 
+app.use(express.json());
+
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/course", courseRouter);
@@ -26,7 +28,7 @@ async function startApplication() {
       console.log("Server is running on port " + port);
     });
   } catch (e) {
-    console.log("Error Starting Application:" + e);
+    console.error("Error Starting Application:", e);
   }
 }
 
