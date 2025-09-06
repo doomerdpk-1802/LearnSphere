@@ -1,16 +1,10 @@
 const express = require("express");
 const mongoose = require("mongoose");
 require("dotenv").config();
-const port = process.env.PORT;
+const port = process.env.PORT || 3000;
 const { userRouter } = require("./routes/userRoutes");
 const { adminRouter } = require("./routes/adminRoutes");
 const { courseRouter } = require("./routes/courseRoutes");
-const {
-  userModel,
-  adminModel,
-  coursesModel,
-  purchasesModel,
-} = require("./db/db");
 
 const app = express();
 
@@ -22,6 +16,10 @@ app.use("/api/v1/course", courseRouter);
 
 async function startApplication() {
   try {
+    if (!process.env.DATABASE_URL) {
+      throw new Error("DATABASE_URL is not defined in environment variables");
+    }
+
     await mongoose.connect(process.env.DATABASE_URL);
     console.log("Successfully connected to the Database!");
     app.listen(port, () => {
@@ -33,3 +31,9 @@ async function startApplication() {
 }
 
 startApplication();
+
+process.on("SIGINT", async () => {
+  await mongoose.connection.close();
+  console.log("🔌 MongoDB connection closed");
+  process.exit(0);
+});

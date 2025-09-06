@@ -1,4 +1,4 @@
-const { Router, application } = require("express");
+const { Router } = require("express");
 const adminRouter = Router();
 const { schemaUser } = require("../validators/ValidateUser");
 const { adminModel, coursesModel } = require("../db/db");
@@ -8,6 +8,10 @@ const jwt = require("jsonwebtoken");
 const JWT_SECRET_ADMIN = process.env.JWT_SECRET_ADMIN;
 const { adminMiddleware } = require("../middlewares/adminMiddleware");
 const { schemaCourse } = require("../validators/validateCourse");
+
+if (!JWT_SECRET_ADMIN) {
+  throw new Error("JWT_SECRET_ADMIN is not defined in environment variables");
+}
 
 adminRouter.post("/signup", async (req, res) => {
   const validUser = schemaUser.safeParse(req.body);
@@ -33,9 +37,7 @@ adminRouter.post("/signup", async (req, res) => {
       });
     }
   } else {
-    res.status(400).json({
-      error: validUser.error,
-    });
+    res.status(400).json({ error: validUser.error.errors });
   }
 });
 
@@ -48,14 +50,14 @@ adminRouter.post("/login", async (req, res) => {
     });
 
     if (!foundAdmin) {
-      res.status(404).json({
+      return res.status(404).json({
         error: "Admin doesn't exist!",
       });
     }
     const isPasswordValid = await bcrypt.compare(password, foundAdmin.password);
 
     if (!isPasswordValid) {
-      res.json(401).json({
+      return res.status(401).json({
         error: "Invalid Credientials!",
       });
     }
@@ -110,17 +112,11 @@ adminRouter.put("/update-course", async (req, res) => {
   const validCourse = schemaCourse.safeParse(req.body);
   if (!validCourse.success) {
     return res.status(400).json({
-      error: validCourse.error,
+      error: validCourse.error.errors,
     });
   }
   try {
     const { courseId, title, description, price, imageUrl } = req.body;
-    await coursesModel.findByIdAndUpdate(courseId, {
-      title,
-      description,
-      price,
-      imageUrl,
-    });
 
     const foundCourse = await coursesModel.findById(courseId);
     if (!foundCourse) {
@@ -134,6 +130,14 @@ adminRouter.put("/update-course", async (req, res) => {
         error: "Unauthorized!",
       });
     }
+
+    await coursesModel.findByIdAndUpdate(courseId, {
+      title,
+      description,
+      price,
+      imageUrl,
+    });
+
     res.status(200).json({
       message: "Course updated successfully!",
     });
@@ -200,6 +204,10 @@ adminRouter.get("/me", async (req, res) => {
     const admin = await adminModel.findOne({
       _id: req.adminId,
     });
+
+    if (!admin) {
+      return res.status(404).json({ error: "Admin not found" });
+    }
 
     res.status(200).json({
       message: "Hello " + admin.firstName + " " + admin.lastName,

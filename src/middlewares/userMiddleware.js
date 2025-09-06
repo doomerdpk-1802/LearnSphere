@@ -1,17 +1,26 @@
 const jwt = require("jsonwebtoken");
 const JWT_SECRET_USER = process.env.JWT_SECRET_USER;
 
+if (!JWT_SECRET_USER) {
+  throw new Error("JWT_SECRET_USER is not defined in environment variables");
+}
+
 function userMiddleware(req, res, next) {
-  const token = req.headers.authorization;
-  if (!token) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
     return res.status(401).json({ error: "Unauthorized!" });
   }
 
-  const decodedUser = jwt.verify(token, JWT_SECRET_USER);
-  if (decodedUser) {
+  const token = authHeader;
+
+  try {
+    const decodedUser = jwt.verify(token, JWT_SECRET_USER);
     req.userId = decodedUser.userId;
     next();
-  } else {
+  } catch (err) {
+    if (err.name === "TokenExpiredError") {
+      return res.status(401).json({ error: "Token expired" });
+    }
     return res.status(401).json({ error: "Unauthorized!" });
   }
 }

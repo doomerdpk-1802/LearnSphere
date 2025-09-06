@@ -8,6 +8,10 @@ const jwt = require("jsonwebtoken");
 const JWT_SECRET_USER = process.env.JWT_SECRET_USER;
 const { userMiddleware } = require("../middlewares/userMiddleware");
 
+if (!JWT_SECRET_USER) {
+  throw new Error("JWT_SECRET_USER is not defined in environment variables");
+}
+
 userRouter.post("/signup", async (req, res) => {
   const validUser = schemaUser.safeParse(req.body);
 
@@ -32,9 +36,7 @@ userRouter.post("/signup", async (req, res) => {
       });
     }
   } else {
-    res.status(400).json({
-      error: validUser.error,
-    });
+    res.status(400).json({ error: validUser.error.errors });
   }
 });
 
@@ -47,14 +49,14 @@ userRouter.post("/login", async (req, res) => {
     });
 
     if (!foundUser) {
-      res.status(404).json({
+      return res.status(404).json({
         error: "User doesn't exist!",
       });
     }
     const isPasswordValid = await bcrypt.compare(password, foundUser.password);
 
     if (!isPasswordValid) {
-      res.json(401).json({
+      return res.status(401).json({
         error: "Invalid Credientials!",
       });
     }
