@@ -1,7 +1,7 @@
 const { Router, application } = require("express");
 const userRouter = Router();
 const { schemaUser } = require("../validators/ValidateUser");
-const { userModel } = require("../db/db");
+const { userModel, coursesModel, purchasesModel } = require("../db/db");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const jwt = require("jsonwebtoken");
@@ -75,12 +75,43 @@ userRouter.post("/login", async (req, res) => {
 
 userRouter.use(userMiddleware);
 
-userRouter.post("/purchase-course", (req, res) => {
-  res.send("user purchase-course endpoint!");
+userRouter.post("/purchase-course", async (req, res) => {
+  try {
+    const { courseId } = req.body;
+    const foundCourse = await coursesModel.findById(courseId);
+    if (!foundCourse) {
+      return res.status(404).json({ error: "Course not found" });
+    }
+    await purchasesModel.create({ courseId, userId: req.userId });
+    res.status(200).json({
+      message: "Course purchased successfully!",
+    });
+  } catch (e) {
+    console.error("Error Purchasing Course:", e);
+    res.status(500).json({
+      error: "Error Purchasing Course!",
+    });
+  }
 });
 
-userRouter.get("/my-courses", (req, res) => {
-  res.send("user my-courses endpoint!");
+userRouter.get("/my-purchased-courses", async (req, res) => {
+  try {
+    const purchasedCourses = await purchasesModel.find({ userId: req.userId });
+    if (purchasedCourses.length === 0) {
+      res.status(200).json({
+        message: "No purchased courses found!",
+      });
+    } else {
+      res.status(200).json({
+        purchasedCourses,
+      });
+    }
+  } catch (e) {
+    console.error("Error Fetching Purchased Courses:", e);
+    res.status(500).json({
+      error: "Error Fetching Purchased Courses!",
+    });
+  }
 });
 
 userRouter.get("/me", async (req, res) => {

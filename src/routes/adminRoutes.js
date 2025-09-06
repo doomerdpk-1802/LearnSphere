@@ -1,12 +1,13 @@
 const { Router, application } = require("express");
 const adminRouter = Router();
 const { schemaUser } = require("../validators/ValidateUser");
-const { adminModel } = require("../db/db");
+const { adminModel, coursesModel } = require("../db/db");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const jwt = require("jsonwebtoken");
 const JWT_SECRET_ADMIN = process.env.JWT_SECRET_ADMIN;
 const { adminMiddleware } = require("../middlewares/adminMiddleware");
+const { schemaCourse } = require("../validators/validateCourse");
 
 adminRouter.post("/signup", async (req, res) => {
   const validUser = schemaUser.safeParse(req.body);
@@ -75,20 +76,123 @@ adminRouter.post("/login", async (req, res) => {
 
 adminRouter.use(adminMiddleware);
 
-adminRouter.post("/create-course", (req, res) => {
-  res.send("admin create course endpoint!");
+adminRouter.post("/create-course", async (req, res) => {
+  const validCourse = schemaCourse.safeParse(req.body);
+
+  if (validCourse.success) {
+    try {
+      const { title, description, price, imageUrl } = req.body;
+      await coursesModel.create({
+        title,
+        description,
+        price,
+        imageUrl,
+        creatorId: req.adminId,
+      });
+
+      res.status(201).json({
+        message: "Course created successfully!",
+      });
+    } catch (e) {
+      console.error("Error Creating Course:", e);
+      res.status(500).json({
+        error: "Error Creating Course!",
+      });
+    }
+  } else {
+    res.status(400).json({
+      error: validCourse.error,
+    });
+  }
 });
 
-adminRouter.put("/update-course", (req, res) => {
-  res.send("admin update-course endpoint!");
+adminRouter.put("/update-course", async (req, res) => {
+  const validCourse = schemaCourse.safeParse(req.body);
+  if (!validCourse.success) {
+    return res.status(400).json({
+      error: validCourse.error,
+    });
+  }
+  try {
+    const { courseId, title, description, price, imageUrl } = req.body;
+    await coursesModel.findByIdAndUpdate(courseId, {
+      title,
+      description,
+      price,
+      imageUrl,
+    });
+
+    const foundCourse = await coursesModel.findById(courseId);
+    if (!foundCourse) {
+      return res.status(404).json({
+        error: "Course not found!",
+      });
+    }
+
+    if (foundCourse.creatorId.toString() !== req.adminId) {
+      return res.status(401).json({
+        error: "Unauthorized!",
+      });
+    }
+    res.status(200).json({
+      message: "Course updated successfully!",
+    });
+  } catch (e) {
+    console.error("Error Updating Course:", e);
+    res.status(500).json({
+      error: "Error Updating Course!",
+    });
+  }
 });
 
-adminRouter.get("/my-courses", (req, res) => {
-  res.send("admin my-courses endpoint!");
+adminRouter.get("/my-courses", async (req, res) => {
+  try {
+    const courses = await coursesModel.find({ creatorId: req.adminId });
+    if (courses.length == 0) {
+      res.status(200).json({
+        message: "No courses found!",
+      });
+    } else {
+      res.status(200).json({
+        courses,
+      });
+    }
+  } catch (e) {
+    console.error("Error Fetching Courses:", e);
+    res.status(500).json({
+      error: "Error Fetching Courses!",
+    });
+  }
 });
 
-adminRouter.delete("/delete-course", (req, res) => {
-  res.send("admin delete-course endpoint!");
+adminRouter.delete("/delete-course", async (req, res) => {
+  try {
+    const courseId = req.body.courseId;
+
+    const foundCourse = await coursesModel.findById(courseId);
+    if (!foundCourse) {
+      return res.status(404).json({
+        error: "Course not found!",
+      });
+    }
+
+    if (foundCourse.creatorId.toString() !== req.adminId) {
+      return res.status(401).json({
+        error: "Unauthorized!",
+      });
+    }
+
+    await coursesModel.findByIdAndDelete(courseId);
+
+    return res.status(200).json({
+      message: "Course deleted successfully!",
+    });
+  } catch (e) {
+    console.error("Error Deleting Course:", e);
+    return res.status(500).json({
+      error: "Error Deleting Course!",
+    });
+  }
 });
 
 adminRouter.get("/me", async (req, res) => {

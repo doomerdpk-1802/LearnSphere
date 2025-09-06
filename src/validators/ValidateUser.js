@@ -8,7 +8,7 @@ const schemaUser = z.object({
   lastName: z
     .string()
     .min(1, "Last name must be at least 2 characters")
-    .max(100, "First name must be less than 100 characters"),
+    .max(100, "Last name must be less than 100 characters"),
   email: z.string().email("Invalid email format"),
   password: z
     .string()
