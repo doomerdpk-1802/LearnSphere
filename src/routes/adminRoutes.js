@@ -1,4 +1,4 @@
-const { Router } = require("express");
+const { Router, application } = require("express");
 const adminRouter = Router();
 const { schemaUser } = require("../validators/ValidateUser");
 const { adminModel } = require("../db/db");
@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const jwt = require("jsonwebtoken");
 const JWT_SECRET_ADMIN = process.env.JWT_SECRET_ADMIN;
+const { adminMiddleware } = require("../middlewares/adminMiddleware");
 
 adminRouter.post("/signup", async (req, res) => {
   const validUser = schemaUser.safeParse(req.body);
@@ -58,7 +59,7 @@ adminRouter.post("/login", async (req, res) => {
       });
     }
 
-    const token = jwt.sign({ userId: foundAdmin._id }, JWT_SECRET_ADMIN);
+    const token = jwt.sign({ adminId: foundAdmin._id }, JWT_SECRET_ADMIN);
 
     res.status(200).json({
       message: "admin logged-in successfully",
@@ -71,6 +72,8 @@ adminRouter.post("/login", async (req, res) => {
     });
   }
 });
+
+adminRouter.use(adminMiddleware);
 
 adminRouter.post("/create-course", (req, res) => {
   res.send("admin create course endpoint!");
@@ -88,8 +91,21 @@ adminRouter.delete("/delete-course", (req, res) => {
   res.send("admin delete-course endpoint!");
 });
 
-adminRouter.get("/me", (req, res) => {
-  res.send("admin me endpoint!");
+adminRouter.get("/me", async (req, res) => {
+  try {
+    const admin = await adminModel.findOne({
+      _id: req.adminId,
+    });
+
+    res.status(200).json({
+      message: "Hello " + admin.firstName + " " + admin.lastName,
+    });
+  } catch (e) {
+    console.error("Error fecthing user", e);
+    res.status(500).json({
+      error: "Error fecthing user",
+    });
+  }
 });
 
 module.exports = {

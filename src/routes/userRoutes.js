@@ -1,4 +1,4 @@
-const { Router } = require("express");
+const { Router, application } = require("express");
 const userRouter = Router();
 const { schemaUser } = require("../validators/ValidateUser");
 const { userModel } = require("../db/db");
@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const jwt = require("jsonwebtoken");
 const JWT_SECRET_USER = process.env.JWT_SECRET_USER;
+const { userMiddleware } = require("../middlewares/userMiddleware");
 
 userRouter.post("/signup", async (req, res) => {
   const validUser = schemaUser.safeParse(req.body);
@@ -72,6 +73,8 @@ userRouter.post("/login", async (req, res) => {
   }
 });
 
+userRouter.use(userMiddleware);
+
 userRouter.post("/purchase-course", (req, res) => {
   res.send("user purchase-course endpoint!");
 });
@@ -80,8 +83,25 @@ userRouter.get("/my-courses", (req, res) => {
   res.send("user my-courses endpoint!");
 });
 
-userRouter.get("/me", (req, res) => {
-  res.send("user me endpoint!");
+userRouter.get("/me", async (req, res) => {
+  try {
+    const user = await userModel.findOne({
+      _id: req.userId,
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json({
+      message: "Hello " + user.firstName + " " + user.lastName,
+    });
+  } catch (e) {
+    console.error("Error fetching user", e);
+    res.status(500).json({
+      error: "Error fetching user",
+    });
+  }
 });
 
 module.exports = {
