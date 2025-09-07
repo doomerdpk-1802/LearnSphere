@@ -1,0 +1,35 @@
+services:
+  mongo:
+    image: mongo:latest
+    container_name: learnspheredb
+    ports:
+      - 27017:27017
+    volumes:
+      - data_db:/data/db
+    restart: unless-stopped
+  backend:
+    build:
+      context: ./docker
+      dockerfile: Dockerfile-src
+    container_name: learnspherebackend
+    ports:
+      - 3000:3000
+    environment:
+      - DATABASE_URL=mongodb://learnspheredb:27017/learnsphere_db
+    depends_on:
+      - mongo
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./docker
+      dockerfile: Dockerfile-public
+    container_name: learnspherefrontend
+    ports:
+      - 8080:80
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  data_db:
