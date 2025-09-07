@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LearnSphere - Transform Your Learning Journey</title>
+    <link
+      rel="icon"
+      type="image/png"
+      href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSjY7fw7OoTn5nEagKeOKV2K25dl5S0-ZMoCw&s"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="app">
+      <!-- Home Page -->
+      <div id="home-page" class="page active">
+        <header class="header">
+          <div class="container">
+            <div class="nav">
+              <div class="logo">
+                <h1>LearnSphere</h1>
+              </div>
+              <!-- signup, login, and theme toggle buttons in topbar -->
+              <div class="nav-buttons">
+                <button
+                  class="theme-toggle"
+                  id="theme-toggle"
+                  onclick="toggleTheme()"
+                >
+                  <svg
+                    id="sun-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                  </svg>
+                  <svg
+                    id="moon-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    style="display: none"
+                  >
+                    <path
+                      d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+                    ></path>
+                  </svg>
+                </button>
+                <button class="btn btn-outline-small" onclick="showLogin()">
+                  Sign In
+                </button>
+                <button class="btn btn-primary-small" onclick="showSignup()">
+                  Sign Up
+                </button>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <main class="hero">
+          <div class="container">
+            <div class="hero-content">
+              <div class="hero-text">
+                <h2 class="hero-title">Transform Your Learning Journey</h2>
+                <p class="hero-description">
+                  Discover world-class courses from expert instructors. Build
+                  skills that matter, advance your career, and unlock your
+                  potential with LearnSphere.
+                </p>
+                <div class="hero-stats">
+                  <div class="stat">
+                    <span class="stat-number">50K+</span>
+                    <span class="stat-label">Students</span>
+                  </div>
+                  <div class="stat">
+                    <span class="stat-number">1,200+</span>
+                    <span class="stat-label">Courses</span>
+                  </div>
+                  <div class="stat">
+                    <span class="stat-number">95%</span>
+                    <span class="stat-label">Success Rate</span>
+                  </div>
+                </div>
+              </div>
+              <div class="hero-actions">
+                <button class="btn btn-primary" onclick="showSignup()">
+                  Get Started
+                </button>
+                <button class="btn btn-secondary" onclick="showLogin()">
+                  Sign In
+                </button>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+
+      <!-- Signup Page -->
+      <div id="signup-page" class="page">
+        <div class="auth-container">
+          <div class="auth-card">
+            <div class="auth-header">
+              <button class="back-btn" onclick="showHome()">← Back</button>
+              <h2>Create Your Account</h2>
+              <p>Join thousands of learners on LearnSphere</p>
+            </div>
+
+            <form class="auth-form" id="signup-form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="firstName">First Name</label>
+                  <input type="text" id="firstName" name="firstName" required />
+                </div>
+                <div class="form-group">
+                  <label for="lastName">Last Name (Optional)</label>
+                  <input type="text" id="lastName" name="lastName" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" required />
+              </div>
+
+              <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required />
+                <small class="password-hint">
+                  Password must be 8-20 characters with uppercase, lowercase,
+                  number, and special character (@$!%*?&)
+                </small>
+              </div>
+
+              <div class="auth-buttons">
+                <button type="submit" class="btn btn-primary" data-role="user">
+                  Sign Up as Student
+                </button>
+                <button type="submit" class="btn btn-outline" data-role="admin">
+                  Sign Up as Instructor
+                </button>
+              </div>
+            </form>
+
+            <div class="auth-footer">
+              <p>
+                Already have an account?
+                <a href="#" onclick="showLogin()">Sign in</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Login Page -->
+      <div id="login-page" class="page">
+        <div class="auth-container">
+          <div class="auth-card">
+            <div class="auth-header">
+              <button class="back-btn" onclick="showHome()">← Back</button>
+              <h2>Welcome Back</h2>
+              <p>Sign in to continue your learning journey</p>
+            </div>
+
+            <form class="auth-form" id="login-form">
+              <div class="form-group">
+                <label for="loginEmail">Email Address</label>
+                <input type="email" id="loginEmail" name="email" required />
+              </div>
+
+              <div class="form-group">
+                <label for="loginPassword">Password</label>
+                <input
+                  type="password"
+                  id="loginPassword"
+                  name="password"
+                  required
+                />
+              </div>
+
+              <div class="auth-buttons">
+                <button type="submit" class="btn btn-primary" data-role="user">
+                  Login as Student
+                </button>
+                <button type="submit" class="btn btn-outline" data-role="admin">
+                  Login as Instructor
+                </button>
+              </div>
+            </form>
+
+            <div class="auth-footer">
+              <p>
+                Don't have an account?
+                <a href="#" onclick="showSignup()">Sign up</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Courses Page -->
+      <div id="courses-page" class="page">
+        <header class="header">
+          <div class="container">
+            <div class="nav">
+              <div class="logo">
+                <h1>LearnSphere</h1>
+              </div>
+              <!-- theme toggle button in courses page header -->
+              <div class="nav-buttons">
+                <button class="theme-toggle" onclick="toggleTheme()">
+                  <svg
+                    id="sun-icon-courses"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                  </svg>
+                  <svg
+                    id="moon-icon-courses"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    style="display: none"
+                  >
+                    <path
+                      d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+                    ></path>
+                  </svg>
+                </button>
+                <div class="user-greeting" id="user-greeting"></div>
+                <button class="btn btn-outline-small" onclick="logout()">
+                  Logout
+                </button>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <main class="courses-main">
+          <div class="container">
+            <!-- toggle buttons to switch between purchased and available courses -->
+            <div class="courses-toggle">
+              <button
+                class="toggle-btn active"
+                id="purchased-toggle"
+                onclick="showPurchasedCourses()"
+              >
+                My Courses
+              </button>
+              <button
+                class="toggle-btn"
+                id="available-toggle"
+                onclick="showAvailableCourses()"
+              >
+                Browse Courses
+              </button>
+            </div>
+
+            <!-- Made purchased courses section toggleable -->
+            <div
+              class="purchased-courses-section active"
+              id="purchased-section"
+            >
+              <div class="courses-header">
+                <h2>My Purchased Courses</h2>
+                <p>Continue your learning journey</p>
+              </div>
+
+              <div
+                class="purchased-courses-grid"
+                id="purchased-courses-grid"
+              ></div>
+            </div>
+
+            <!-- Made available courses section toggleable -->
+            <div class="available-courses-section" id="available-section">
+              <div class="courses-header">
+                <h2>Available Courses</h2>
+                <p>Discover amazing courses to boost your skills</p>
+              </div>
+
+              <div class="courses-grid" id="courses-grid"></div>
+            </div>
+          </div>
+        </main>
+      </div>
+
+      <!-- Admin Dashboard Page -->
+      <div id="admin-dashboard" class="page">
+        <header class="header">
+          <div class="container">
+            <div class="nav">
+              <div class="logo">
+                <h1>LearnSphere Admin</h1>
+              </div>
+              <div class="nav-buttons">
+                <button class="theme-toggle" onclick="toggleTheme()">
+                  <svg
+                    id="sun-icon-admin"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                  </svg>
+                  <svg
+                    id="moon-icon-admin"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    style="display: none"
+                  >
+                    <path
+                      d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+                    ></path>
+                  </svg>
+                </button>
+                <div class="user-greeting" id="admin-greeting"></div>
+                <button class="btn btn-outline-small" onclick="logout()">
+                  Logout
+                </button>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <main class="admin-main">
+          <div class="container">
+            <div class="admin-header">
+              <h2>Course Management</h2>
+              <button class="btn btn-primary" onclick="showCreateCourseModal()">
+                Create New Course
+              </button>
+            </div>
+
+            <div class="admin-courses-section">
+              <div class="admin-courses-grid" id="admin-courses-grid"></div>
+            </div>
+          </div>
+        </main>
+      </div>
+
+      <!-- Course Modal -->
+      <div id="course-modal" class="modal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 id="modal-title">Create New Course</h3>
+            <button class="close-btn" onclick="closeCourseModal()">
+              &times;
+            </button>
+          </div>
+
+          <form class="course-form" id="course-form">
+            <div class="form-group">
+              <label for="courseTitle">Course Title</label>
+              <input type="text" id="courseTitle" name="title" required />
+            </div>
+
+            <div class="form-group">
+              <label for="courseDescription">Description</label>
+              <textarea
+                id="courseDescription"
+                name="description"
+                rows="4"
+                required
+              ></textarea>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="coursePrice">Price ($)</label>
+                <input
+                  type="number"
+                  id="coursePrice"
+                  name="price"
+                  min="0"
+                  step="0.01"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="courseCreator">Creator Name</label>
+                <input type="text" id="courseCreator" name="creator" required />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="courseImage">Image URL</label>
+              <input type="url" id="courseImage" name="image" required />
+            </div>
+
+            <div class="modal-buttons">
+              <button
+                type="button"
+                class="btn btn-outline"
+                onclick="closeCourseModal()"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                class="btn btn-primary"
+                id="course-submit-btn"
+              >
+                Create Course
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

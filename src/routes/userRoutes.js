@@ -98,16 +98,22 @@ userRouter.post("/purchase-course", async (req, res) => {
 
 userRouter.get("/my-purchased-courses", async (req, res) => {
   try {
-    const purchasedCourses = await purchasesModel.find({ userId: req.userId });
+    const purchasedCourses = await purchasesModel
+      .find({ userId: req.userId })
+      .populate("courseId");
+
     if (purchasedCourses.length === 0) {
-      res.status(200).json({
+      return res.status(200).json({
         message: "No purchased courses found!",
-      });
-    } else {
-      res.status(200).json({
-        purchasedCourses,
+        purchasedCourses: [],
       });
     }
+
+    const courses = purchasedCourses.map((purchase) => purchase.courseId);
+
+    res.status(200).json({
+      purchasedCourses: courses,
+    });
   } catch (e) {
     console.error("Error Fetching Purchased Courses:", e);
     res.status(500).json({
