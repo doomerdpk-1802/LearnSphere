@@ -80,6 +80,18 @@ userRouter.use(userMiddleware);
 userRouter.post("/purchase-course", async (req, res) => {
   try {
     const { courseId } = req.body;
+
+    const foundPurchase = await purchasesModel.findOne({
+      courseId,
+      userId: req.userId,
+    });
+
+    if (foundPurchase) {
+      return res.status(400).json({
+        error: "You have already purchased this course",
+      });
+    }
+
     const foundCourse = await coursesModel.findById(courseId);
     if (!foundCourse) {
       return res.status(404).json({ error: "Course not found" });
