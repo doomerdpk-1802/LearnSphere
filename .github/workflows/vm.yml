@@ -48,5 +48,6 @@ jobs:
             
             # Start the app
             cd src
-            npm run start
+            npm run start &
+
           EOF
