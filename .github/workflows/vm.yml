@@ -27,7 +27,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@13.60.168.88 << 'EOF'
             # Remove old folder if exists
-            rm -rf LearnSphere
+            sudo rm -rf LearnSphere
             
             # Clone repo
             git clone https://github.com/doomerdpk-1802/LearnSphere.git
