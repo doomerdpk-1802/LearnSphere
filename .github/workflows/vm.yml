@@ -1,4 +1,4 @@
-name: Deploy to EC2 on Master Push
+name: Deploy to EC2 on Every push to master branch
 
 on:
   push:
