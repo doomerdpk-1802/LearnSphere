@@ -4,7 +4,11 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon src/server.js",
-    "start": "node src/server.js"
+    "start": "node src/server.js",
+    "start:pm2": "pm2 start src/server.js --name LearnSphere --update-env",
+    "stop:pm2": "pm2 stop LearnSphere",
+    "restart:pm2": "pm2 restart LearnSphere",
+    "status:pm2": "pm2 status"
   },
   "keywords": [],
   "author": "",
@@ -17,6 +21,7 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.18.0",
+    "pm2": "^6.0.10",
     "zod": "^4.1.5"
   }
 }
