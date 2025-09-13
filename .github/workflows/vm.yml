@@ -1,0 +1,52 @@
+name: Deploy to EC2 on Master Push
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup SSH key
+        uses: webfactory/ssh-agent@v0.7.1
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+
+      - name: Deploy to EC2
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          PORT: ${{ vars.PORT }}
+          JWT_SECRET_USER: ${{ secrets.JWT_SECRET_USER }}
+          JWT_SECRET_ADMIN: ${{ secrets.JWT_SECRET_ADMIN }}
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@YOUR_EC2_PUBLIC_IP << 'EOF'
+            # Remove old folder if exists
+            rm -rf LearnSphere
+            
+            # Clone repo
+            git clone https://github.com/doomerdpk-1802/LearnSphere.git
+            cd LearnSphere
+            
+            # Install dependencies
+            npm install
+            
+            # Create .env file
+            echo "DATABASE_URL=$DATABASE_URL" > .env
+            echo "PORT=$PORT" >> .env
+            echo "JWT_SECRET_USER=$JWT_SECRET_USER" >> .env
+            echo "JWT_SECRET_ADMIN=$JWT_SECRET_ADMIN" >> .env
+            
+            # Copy nginx config and restart
+            sudo cp ops/nginx/nginx.conf /etc/nginx/nginx.conf
+            sudo systemctl restart nginx
+            
+            # Start the app
+            cd src
+            npm run start
+          EOF
