@@ -48,6 +48,7 @@ jobs:
             
             # Start the app
             cd src
+            npm run stop:pm2
             npm run start:pm2
 
           EOF
