@@ -1,4 +1,3 @@
-// Client-side routing
 const pages = {
   home: document.getElementById("home-page"),
   signup: document.getElementById("signup-page"),
@@ -172,17 +171,14 @@ async function loadAdminCourses() {
 }
 
 function showPage(pageName) {
-  // Hide all pages
   Object.values(pages).forEach((page) => {
     page.classList.remove("active");
   });
 
-  // Show selected page
   if (pages[pageName]) {
     pages[pageName].classList.add("active");
     currentPage = pageName;
 
-    // Update URL without page reload
     history.pushState({ page: pageName }, "", `#${pageName}`);
   }
 }
@@ -219,29 +215,15 @@ function logout() {
   showHome();
 }
 
-function loadPurchasedCourses() {
-  const purchasedCoursesGrid = document.getElementById(
-    "purchased-courses-grid"
-  );
-
-  purchasedCoursesGrid.innerHTML = `
-    <div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: var(--text-secondary);">
-      <p>No purchased courses yet. Browse available courses below to get started!</p>
-    </div>
-  `;
-}
-
 function showPurchasedCourses() {
   const purchasedSection = document.getElementById("purchased-section");
   const availableSection = document.getElementById("available-section");
   const purchasedToggle = document.getElementById("purchased-toggle");
   const availableToggle = document.getElementById("available-toggle");
 
-  // Show purchased courses section
   purchasedSection.classList.add("active");
   availableSection.classList.remove("active");
 
-  // Update toggle button states
   purchasedToggle.classList.add("active");
   availableToggle.classList.remove("active");
 }
@@ -252,11 +234,9 @@ function showAvailableCourses() {
   const purchasedToggle = document.getElementById("purchased-toggle");
   const availableToggle = document.getElementById("available-toggle");
 
-  // Show available courses section
   availableSection.classList.add("active");
   purchasedSection.classList.remove("active");
 
-  // Update toggle button states
   availableToggle.classList.add("active");
   purchasedToggle.classList.remove("active");
 }
@@ -383,7 +363,7 @@ function editCourse(courseId) {
     document.getElementById("courseTitle").value = course.title;
     document.getElementById("courseDescription").value = course.description;
     document.getElementById("coursePrice").value = course.price;
-    document.getElementById("courseCreator").value = "Admin"; // Default for now
+    document.getElementById("courseCreator").value = "Admin";
     document.getElementById("courseImage").value = course.imageUrl;
 
     document.getElementById("course-modal").classList.add("active");
@@ -438,7 +418,6 @@ async function deleteCourse(courseId) {
   }
 }
 
-// Handle browser back/forward buttons
 window.addEventListener("popstate", (event) => {
   if (event.state && event.state.page) {
     showPage(event.state.page);
@@ -447,7 +426,6 @@ window.addEventListener("popstate", (event) => {
   }
 });
 
-// Handle initial page load based on URL hash
 window.addEventListener("load", () => {
   const storedUserData = loadUserDataFromStorage();
   const token = localStorage.getItem("authToken");
@@ -455,7 +433,6 @@ window.addEventListener("load", () => {
   if (storedUserData && token) {
     currentUser = storedUserData.user;
 
-    // Redirect to appropriate dashboard based on stored role
     if (storedUserData.role === "admin") {
       showAdminDashboard();
       return;
@@ -479,7 +456,6 @@ window.addEventListener("load", () => {
   }
 });
 
-// Form handling
 document.addEventListener("DOMContentLoaded", () => {
   const signupForm = document.getElementById("signup-form");
   const loginForm = document.getElementById("login-form");
@@ -792,7 +768,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Add entrance animations
   const heroElements = document.querySelectorAll(
     ".hero-title, .hero-description, .hero-stats, .hero-actions"
   );
@@ -807,7 +782,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }, index * 200);
   });
 
-  // Add learning card animation
   const learningCard = document.querySelector(".learning-card");
   if (learningCard) {
     learningCard.style.opacity = "0";
@@ -820,7 +794,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 800);
   }
 
-  // Add form validation feedback
   function addInputValidation() {
     const inputs = document.querySelectorAll("input[required]");
 
@@ -844,7 +817,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Initialize validation when DOM is loaded
   addInputValidation();
 
   document.getElementById("course-modal").addEventListener("click", (e) => {
@@ -856,77 +828,6 @@ document.addEventListener("DOMContentLoaded", () => {
   initializeTheme();
 });
 
-// Fetch and render all available courses
-async function loadAvailableCourses() {
-  const coursesGrid = document.getElementById("courses-grid");
-  if (!coursesGrid) return;
-
-  try {
-    const token = localStorage.getItem("authToken"); // only if your API needs it
-    const response = await fetch(
-      "http://localhost:3000/api/v1/course/all-courses",
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: token } : {}), // add token only if present
-        },
-      }
-    );
-
-    const result = await response.json();
-
-    if (response.ok && result.courses) {
-      if (result.courses.length === 0) {
-        coursesGrid.innerHTML = `
-          <p style="grid-column:1 / -1; text-align:center; color:var(--text-secondary);">
-            No courses available right now.
-          </p>`;
-        return;
-      }
-
-      coursesGrid.innerHTML = result.courses
-        .map(
-          (course) => `
-          <div class="course-card">
-            <img src="${course.imageUrl}" alt="${
-            course.title
-          }" class="course-image" />
-            <div class="course-content">
-              <h3 class="course-title">${course.title}</h3>
-              <p class="course-description">${course.description}</p>
-              <div class="course-meta">
-                <div class="course-creator"><strong>By:</strong> ${
-                  course.creatorName || "Instructor"
-                }</div>
-                <div class="course-price">$${course.price}</div>
-              </div>
-              <button class="course-purchase" onclick="purchaseCourse('${
-                course._id
-              }')">
-                Purchase this course
-              </button>
-            </div>
-          </div>
-        `
-        )
-        .join("");
-    } else {
-      coursesGrid.innerHTML = `
-        <p style="grid-column:1 / -1; text-align:center; color:red;">
-          Failed to load courses. ${result.error || ""}
-        </p>`;
-    }
-  } catch (error) {
-    console.error("Error loading available courses:", error);
-    coursesGrid.innerHTML = `
-      <p style="grid-column:1 / -1; text-align:center; color:red;">
-        Network error while loading courses.
-      </p>`;
-  }
-}
-
-// Purchase API integration
 async function purchaseCourse(courseId) {
   const token = localStorage.getItem("authToken");
   if (!token) {
@@ -1036,7 +937,6 @@ if (typeof window.loadPurchasedCourses !== "function") {
   };
 }
 
-// Load Available Courses
 if (typeof window.loadAvailableCourses !== "function") {
   window.loadAvailableCourses = async function () {
     const coursesGrid = document.getElementById("courses-grid");
@@ -1045,7 +945,6 @@ if (typeof window.loadAvailableCourses !== "function") {
     try {
       const token = localStorage.getItem("authToken");
 
-      // fetch all courses
       const coursesResp = await fetch(
         "http://localhost:3000/api/v1/course/all-courses",
         {
@@ -1059,7 +958,6 @@ if (typeof window.loadAvailableCourses !== "function") {
 
       const coursesData = await coursesResp.json();
 
-      // fetch purchased courses
       let purchasedIds = [];
       if (token) {
         const purchasedResp = await fetch(
@@ -1118,7 +1016,6 @@ if (typeof window.loadAvailableCourses !== "function") {
   };
 }
 
-// Patch Navigation
 const originalShowAvailableCourses = window.showAvailableCourses;
 window.showAvailableCourses = function () {
   if (originalShowAvailableCourses) originalShowAvailableCourses();

@@ -110,18 +110,21 @@ userRouter.post("/purchase-course", async (req, res) => {
 
 userRouter.get("/my-purchased-courses", async (req, res) => {
   try {
-    const purchasedCourses = await purchasesModel
-      .find({ userId: req.userId })
-      .populate("courseId");
+    const purchasedRecords = await purchasesModel.find({ userId: req.userId });
 
-    if (purchasedCourses.length === 0) {
+    if (purchasedRecords.length === 0) {
       return res.status(200).json({
         message: "No purchased courses found!",
         purchasedCourses: [],
       });
     }
 
-    const courses = purchasedCourses.map((purchase) => purchase.courseId);
+    const courseIds = purchasedRecords.map((p) => p.courseId);
+
+    const courses = await coursesModel.find(
+      { _id: { $in: courseIds } },
+      "title description price creatorName imageUrl"
+    );
 
     res.status(200).json({
       purchasedCourses: courses,
