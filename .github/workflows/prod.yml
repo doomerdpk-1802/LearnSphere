@@ -46,7 +46,7 @@ jobs:
 
   deploy-nginx:
     needs: deploy-app
-    if: ${{ always() }}
+    if: ${{ steps.check_nginx.outputs.changed == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -57,23 +57,17 @@ jobs:
         run: |
           git fetch origin master
           if git diff --name-only origin/master~1 origin/master | grep -q '^ops/nginx/nginx.conf'; then
-            echo "NGINX_CHANGED=true" >> $GITHUB_ENV
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Skip if nginx.conf not changed
-        if: env.NGINX_CHANGED != 'true'
-        run: |
-          echo "nginx.conf not changed. Skipping deployment."
-          exit 78
-
       - name: Setup SSH key
-        if: env.NGINX_CHANGED == 'true'
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 
       - name: Deploy nginx config & SSL
-        if: env.NGINX_CHANGED == 'true'
         env:
           DOMAIN: learnsphere.deepak.cfd
         run: |
@@ -92,7 +86,7 @@ jobs:
 
   deploy-nginx-vercel:
     needs: deploy-app
-    if: ${{ always() }}
+    if: ${{ steps.check_nginx.outputs.changed == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
