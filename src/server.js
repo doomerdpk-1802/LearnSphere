@@ -35,7 +35,7 @@ async function startApplication() {
 startApplication();
 
 process.on("SIGINT", async () => {
-  console.log("Shutting down server.......");
+  console.log("Shutting down server...");
 
   server.close(() => {
     console.log("HTTP server closed");
