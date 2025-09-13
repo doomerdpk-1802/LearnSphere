@@ -1,18 +1,32 @@
 name: Deploy Nginx
 
 on:
-  push:
-    branches:
-      - master
-    paths:
-      - ops/nginx/nginx.conf
+  workflow_run:
+    workflows: ["Deploy to EC2 on Every push to master branch"]
+    types:
+      - completed
 
 jobs:
   deploy-nginx:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Detect if nginx.conf changed
+        id: check_nginx
+        run: |
+          git fetch origin master
+          if git diff --name-only origin/master~1 origin/master | grep -q '^ops/nginx/nginx.conf'; then
+            echo "NGINX_CHANGED=true" >> $GITHUB_ENV
+          fi
+
+      - name: Skip if nginx.conf not changed
+        if: env.NGINX_CHANGED != 'true'
+        run: |
+          echo "nginx.conf not changed. Skipping deployment."
+          exit 78  # Neutral exit, workflow marked as skipped
 
       - name: Setup SSH key
         uses: webfactory/ssh-agent@v0.9.0
@@ -20,15 +34,19 @@ jobs:
           ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 
       - name: Deploy nginx config & SSL
+        if: env.NGINX_CHANGED == 'true'
         env:
           DOMAIN: learnsphere.deepak.cfd
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@13.60.168.88 << EOF
             cd /home/ubuntu/LearnSphere
             sudo cp ./ops/nginx/nginx.conf /etc/nginx/nginx.conf
-            sudo nginx -t
-            sudo systemctl restart nginx
-            sudo apt-get update -y
-            sudo apt-get install -y certbot python3-certbot-nginx
+            sudo nginx -t && sudo systemctl reload nginx
+
+            if ! command -v certbot >/dev/null; then
+              sudo apt-get update -y
+              sudo apt-get install -y certbot python3-certbot-nginx
+            fi
+
             sudo certbot --nginx -d $DOMAIN --non-interactive --agree-tos --register-unsafely-without-email
           EOF
