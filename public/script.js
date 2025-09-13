@@ -133,16 +133,13 @@ async function loadAdminCourses() {
       return;
     }
 
-    const response = await fetch(
-      "http://localhost:3000/api/v1/admin/my-courses",
-      {
-        method: "GET",
-        headers: {
-          Authorization: token,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const response = await fetch("/api/v1/admin/my-courses", {
+      method: "GET",
+      headers: {
+        Authorization: token,
+        "Content-Type": "application/json",
+      },
+    });
 
     const result = await response.json();
 
@@ -386,17 +383,14 @@ async function deleteCourse(courseId) {
           return;
         }
 
-        const response = await fetch(
-          "http://localhost:3000/api/v1/admin/delete-course",
-          {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: token,
-            },
-            body: JSON.stringify({ courseId }),
-          }
-        );
+        const response = await fetch("/api/v1/admin/delete-course", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token,
+          },
+          body: JSON.stringify({ courseId }),
+        });
 
         const result = await response.json();
 
@@ -490,9 +484,7 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         console.log("[v0] Sending signup request...");
         const endpoint =
-          role === "admin"
-            ? "http://localhost:3000/api/v1/admin/signup"
-            : "http://localhost:3000/api/v1/user/signup";
+          role === "admin" ? "/api/v1/admin/signup" : "/api/v1/user/signup";
 
         console.log("[v0] Signup endpoint:", endpoint);
         const response = await fetch(endpoint, {
@@ -568,17 +560,14 @@ document.addEventListener("DOMContentLoaded", () => {
         if (currentCourseId) {
           const updateData = { ...courseData, courseId: currentCourseId };
 
-          const response = await fetch(
-            "http://localhost:3000/api/v1/admin/update-course",
-            {
-              method: "PUT",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: token,
-              },
-              body: JSON.stringify(updateData),
-            }
-          );
+          const response = await fetch("/api/v1/admin/update-course", {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: token,
+            },
+            body: JSON.stringify(updateData),
+          });
 
           const result = await response.json();
 
@@ -601,17 +590,14 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
           }
         } else {
-          const response = await fetch(
-            "http://localhost:3000/api/v1/admin/create-course",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: token,
-              },
-              body: JSON.stringify(courseData),
-            }
-          );
+          const response = await fetch("/api/v1/admin/create-course", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: token,
+            },
+            body: JSON.stringify(courseData),
+          });
 
           const result = await response.json();
 
@@ -676,9 +662,7 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         console.log("[v0] Sending login request to backend...");
         const endpoint =
-          role === "admin"
-            ? "http://localhost:3000/api/v1/admin/login"
-            : "http://localhost:3000/api/v1/user/login";
+          role === "admin" ? "/api/v1/admin/login" : "/api/v1/user/login";
 
         const response = await fetch(endpoint, {
           method: "POST",
@@ -703,9 +687,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const token = localStorage.getItem("authToken");
             console.log("[v0] Making /me request with token...");
             const meEndpoint =
-              role === "admin"
-                ? "http://localhost:3000/api/v1/admin/me"
-                : "http://localhost:3000/api/v1/user/me";
+              role === "admin" ? "/api/v1/admin/me" : "/api/v1/user/me";
 
             const userResponse = await fetch(meEndpoint, {
               method: "GET",
@@ -836,17 +818,14 @@ async function purchaseCourse(courseId) {
   }
 
   try {
-    const response = await fetch(
-      "http://localhost:3000/api/v1/user/purchase-course",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token,
-        },
-        body: JSON.stringify({ courseId }),
-      }
-    );
+    const response = await fetch("/api/v1/user/purchase-course", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token,
+      },
+      body: JSON.stringify({ courseId }),
+    });
 
     const result = await response.json();
 
@@ -882,16 +861,13 @@ if (typeof window.loadPurchasedCourses !== "function") {
         return;
       }
 
-      const response = await fetch(
-        "http://localhost:3000/api/v1/user/my-purchased-courses",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token,
-          },
-        }
-      );
+      const response = await fetch("/api/v1/user/my-purchased-courses", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+      });
 
       const result = await response.json();
 
@@ -945,31 +921,25 @@ if (typeof window.loadAvailableCourses !== "function") {
     try {
       const token = localStorage.getItem("authToken");
 
-      const coursesResp = await fetch(
-        "http://localhost:3000/api/v1/course/all-courses",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token,
-          },
-        }
-      );
+      const coursesResp = await fetch("/api/v1/course/all-courses", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+      });
 
       const coursesData = await coursesResp.json();
 
       let purchasedIds = [];
       if (token) {
-        const purchasedResp = await fetch(
-          "http://localhost:3000/api/v1/user/my-purchased-courses",
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: token,
-            },
-          }
-        );
+        const purchasedResp = await fetch("/api/v1/user/my-purchased-courses", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token,
+          },
+        });
         const purchasedData = await purchasedResp.json();
         if (purchasedResp.ok && purchasedData.purchasedCourses) {
           purchasedIds = purchasedData.purchasedCourses.map((c) => c._id);
