@@ -23,7 +23,7 @@ jobs:
         env:
           DOMAIN: learnsphere.deepak.cfd
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@13.60.168.88 << 'EOF'
+          ssh -o StrictHostKeyChecking=no ubuntu@13.60.168.88 << EOF
             cd LearnSphere
             sudo cp ./ops/nginx/nginx.conf /etc/nginx/nginx.conf
             sudo nginx -t
