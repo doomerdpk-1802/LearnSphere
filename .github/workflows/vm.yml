@@ -42,10 +42,6 @@ jobs:
             echo "JWT_SECRET_USER=$JWT_SECRET_USER" >> .env
             echo "JWT_SECRET_ADMIN=$JWT_SECRET_ADMIN" >> .env
             
-            # Copy nginx config and restart
-            sudo cp ops/nginx/nginx.conf /etc/nginx/nginx.conf
-            sudo systemctl restart nginx
-            
             # Start the app
             cd src
             npm run stop:pm2
