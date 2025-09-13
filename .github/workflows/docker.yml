@@ -36,7 +36,7 @@ jobs:
           context: .
           file: ./docker/Dockerfile-src
           push: true
-          tags: doomerdpk/learnsphere:${{ github.sha }}
+          tags: doomerdpk/learnspherebackend:${{ github.sha }}
 
       - name: Build and push image for Frontend
         if: env.BUILD_PUBLIC == 'true'
@@ -45,4 +45,4 @@ jobs:
           context: .
           file: ./docker/Dockerfile-public
           push: true
-          tags: doomerdpk/learnsphere:${{ github.sha }}
+          tags: doomerdpk/learnspherefrontend:${{ github.sha }}
