@@ -25,7 +25,7 @@ jobs:
           JWT_SECRET_USER: ${{ secrets.JWT_SECRET_USER }}
           JWT_SECRET_ADMIN: ${{ secrets.JWT_SECRET_ADMIN }}
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@13.60.168.88 << 'EOF'
+          ssh -o StrictHostKeyChecking=no ubuntu@13.60.168.88 << "EOF"
             # Remove old folder if exists
             sudo rm -rf LearnSphere
             
