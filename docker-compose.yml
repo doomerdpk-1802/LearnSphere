@@ -9,21 +9,24 @@ services:
     restart: unless-stopped
   backend:
     build:
-      context: ./docker
-      dockerfile: Dockerfile-src
+      context: .
+      dockerfile: ./docker/Dockerfile-src
     container_name: learnspherebackend
     ports:
       - 3000:3000
     environment:
       - DATABASE_URL=mongodb://learnspheredb:27017/learnsphere_db
+      - PORT=3000
+      - JWT_SECRET_USER=A7$kLp9!vZ2@hQx3Rt%4
+      - JWT_SECRET_ADMIN=mP#6wXy8^Dz!1rT0&Fs@
     depends_on:
       - mongo
     restart: unless-stopped
 
   frontend:
     build:
-      context: ./docker
-      dockerfile: Dockerfile-public
+      context: .
+      dockerfile: ./docker/Dockerfile-public
     container_name: learnspherefrontend
     ports:
       - 8080:80
