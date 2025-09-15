@@ -33,7 +33,7 @@ frontend:
   frontendcontainername: frontend
   frontendimage:
     repository: doomerdpk/learnspherefrontend
-    tag: 09d270620ce10e3e7fd92fc392128f57c2da7238
+    tag: f43aead8b54c61c40950a32f020706d000c6de05
   frontendservicename: frontend
 ingress:
   frontendingressname: frontendingress

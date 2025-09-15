@@ -134,6 +134,8 @@ async function loadAdminCourses() {
     }
 
     const response = await fetch(
+      // "/api/v1/admin/my-courses",
+      // "https://learnsphere-vercel.api.deepak.cfd/api/v1/admin/my-courses",
       "http://learnsphere-vercel.api.deepak.cfd/api/v1/admin/my-courses",
       {
         method: "GET",
@@ -387,6 +389,8 @@ async function deleteCourse(courseId) {
         }
 
         const response = await fetch(
+          // "/api/v1/admin/delete-course",
+          // "https://learnsphere-vercel.api.deepak.cfd/api/v1/admin/delete-course",
           "http://learnsphere-vercel.api.deepak.cfd/api/v1/admin/delete-course",
           {
             method: "DELETE",
@@ -491,7 +495,11 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log("[v0] Sending signup request...");
         const endpoint =
           role === "admin"
-            ? "http://learnsphere-vercel.api.deepak.cfd/api/v1/admin/signup"
+            ? // ? "/api/v1/admin/signup"
+              //   : "/api/v1/user/signup";
+              //   ? "https://learnsphere-vercel.api.deepak.cfd/api/v1/admin/signup"
+              //   : "https://learnsphere-vercel.api.deepak.cfd/api/v1/user/signup";
+              "http://learnsphere-vercel.api.deepak.cfd/api/v1/admin/signup"
             : "http://learnsphere-vercel.api.deepak.cfd/api/v1/user/signup";
 
         console.log("[v0] Signup endpoint:", endpoint);
@@ -569,6 +577,8 @@ document.addEventListener("DOMContentLoaded", () => {
           const updateData = { ...courseData, courseId: currentCourseId };
 
           const response = await fetch(
+            // "/api/v1/admin/update-course",
+            // "https://learnsphere-vercel.api.deepak.cfd/api/v1/admin/update-course",
             "http://learnsphere-vercel.api.deepak.cfd/api/v1/admin/update-course",
             {
               method: "PUT",
@@ -602,6 +612,8 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         } else {
           const response = await fetch(
+            // "/api/v1/admin/create-course",
+            // "https://learnsphere-vercel.api.deepak.cfd/api/v1/admin/create-course",
             "http://learnsphere-vercel.api.deepak.cfd/api/v1/admin/create-course",
             {
               method: "POST",
@@ -677,7 +689,11 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log("[v0] Sending login request to backend...");
         const endpoint =
           role === "admin"
-            ? "http://learnsphere-vercel.api.deepak.cfd/api/v1/admin/login"
+            ? // ? "/api/v1/admin/login"
+              //   : "/api/v1/user/login";
+              //   ? "https://learnsphere-vercel.api.deepak.cfd/api/v1/admin/login"
+              //   : "https://learnsphere-vercel.api.deepak.cfd/api/v1/user/login";
+              "http://learnsphere-vercel.api.deepak.cfd/api/v1/admin/login"
             : "http://learnsphere-vercel.api.deepak.cfd/api/v1/user/login";
 
         const response = await fetch(endpoint, {
@@ -704,7 +720,11 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log("[v0] Making /me request with token...");
             const meEndpoint =
               role === "admin"
-                ? "http://learnsphere-vercel.api.deepak.cfd/api/v1/admin/me"
+                ? // ? "/api/v1/admin/me"
+                  //   : "/api/v1/user/me";
+                  //   ? "https://learnsphere-vercel.api.deepak.cfd/api/v1/admin/me"
+                  //   : "https://learnsphere-vercel.api.deepak.cfd/api/v1/user/me";
+                  "http://learnsphere-vercel.api.deepak.cfd/api/v1/admin/me"
                 : "http://learnsphere-vercel.api.deepak.cfd/api/v1/user/me";
 
             const userResponse = await fetch(meEndpoint, {
@@ -837,6 +857,8 @@ async function purchaseCourse(courseId) {
 
   try {
     const response = await fetch(
+      // "/api/v1/user/purchase-course",
+      // "https://learnsphere-vercel.api.deepak.cfd/api/v1/user/purchase-course",
       "http://learnsphere-vercel.api.deepak.cfd/api/v1/user/purchase-course",
       {
         method: "POST",
@@ -883,6 +905,8 @@ if (typeof window.loadPurchasedCourses !== "function") {
       }
 
       const response = await fetch(
+        // "/api/v1/user/my-purchased-courses",
+        // "https://learnsphere-vercel.api.deepak.cfd/api/v1/user/my-purchased-courses",
         "http://learnsphere-vercel.api.deepak.cfd/api/v1/user/my-purchased-courses",
         {
           method: "GET",
@@ -946,6 +970,8 @@ if (typeof window.loadAvailableCourses !== "function") {
       const token = localStorage.getItem("authToken");
 
       const coursesResp = await fetch(
+        // "/api/v1/course/all-courses",
+        // "https://learnsphere-vercel.api.deepak.cfd/api/v1/course/all-courses",
         "http://learnsphere-vercel.api.deepak.cfd/api/v1/course/all-courses",
         {
           method: "GET",
@@ -961,6 +987,8 @@ if (typeof window.loadAvailableCourses !== "function") {
       let purchasedIds = [];
       if (token) {
         const purchasedResp = await fetch(
+          // "/api/v1/user/my-purchased-courses",
+          // "https://learnsphere-vercel.api.deepak.cfd/api/v1/user/my-purchased-courses",
           "http://learnsphere-vercel.api.deepak.cfd/api/v1/user/my-purchased-courses",
           {
             method: "GET",
