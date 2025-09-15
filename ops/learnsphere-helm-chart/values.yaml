@@ -21,7 +21,7 @@ backend:
   backendcontainername: backend
   backendimage:
     repository: doomerdpk/learnspherebackend
-    tag: aa3f4ced6e6c91542dd5f2222bef9bd930ce02e1
+    tag: 2b66618517c3259bd177b3d720c3a2514a7e3be0
   backendsecretvolumename: env-file
   backendsecretmountpath: /app/secrets
   backendservicename: backend
@@ -33,7 +33,7 @@ frontend:
   frontendcontainername: frontend
   frontendimage:
     repository: doomerdpk/learnspherefrontend
-    tag: f43aead8b54c61c40950a32f020706d000c6de05
+    tag: 2b66618517c3259bd177b3d720c3a2514a7e3be0
   frontendservicename: frontend
 ingress:
   frontendingressname: frontendingress
