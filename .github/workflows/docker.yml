@@ -46,3 +46,38 @@ jobs:
           file: ./docker/Dockerfile-public
           push: true
           tags: doomerdpk/learnspherefrontend:${{ github.sha }}
+
+      - name: Update Helm values in same repo
+        run: |
+          # Install yq if not already available
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+
+          VALUES_FILE="./ops/learnsphere-helm-chart/values.yml"
+
+          # Update backend image tag only if it was rebuilt
+          if [ "${{ env.BUILD_SRC }}" = "true" ]; then
+            yq -i '.backend.backendimage.tag = "${{ github.sha }}"' $VALUES_FILE
+          fi
+
+          # Update frontend image tag only if it was rebuilt
+          if [ "${{ env.BUILD_PUBLIC }}" = "true" ]; then
+            yq -i '.frontend.frontendimage.tag = "${{ github.sha }}"' $VALUES_FILE
+          fi
+
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+
+          # Stage changes
+          git add $VALUES_FILE || true
+
+          # Commit only if there are changes
+          if git diff --cached --quiet; then
+            echo "No changes to commit, skipping push."
+          else
+            MSG="Update images:"
+            if [ "${{ env.BUILD_SRC }}" = "true" ]; then MSG="$MSG backend=${{ github.sha }}"; fi
+            if [ "${{ env.BUILD_PUBLIC }}" = "true" ]; then MSG="$MSG frontend=${{ github.sha }}"; fi
+            git commit -m "$MSG"
+            git push origin HEAD:${GITHUB_REF#refs/heads/}
+          fi
