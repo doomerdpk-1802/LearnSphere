@@ -1,0 +1,18 @@
+apiVersion: v2
+name: LearnSphere
+description: Helm chart to deploy LearnSphere on K8S Cluster
+type: application
+version: 1.0.0
+dependencies:
+  - name: db
+    version: 1.0.0
+    repository: file://charts/01-db
+  - name: backend
+    version: 1.0.0
+    repository: file://charts/02-backend
+  - name: frontend
+    version: 1.0.0
+    repository: file://charts/03-frontend
+  - name: ingress
+    version: 1.0.0
+    repository: file://charts/04-ingress

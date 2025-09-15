@@ -1,0 +1,42 @@
+# prettier-ignore
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{.Values.frontendingressname}}
+  namespace: {{.Values.frontendnamespace}}
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: {{.Values.frontendingresshost}}
+      http:
+        paths:
+          - path: /(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: {{.Values.frontendservicename}}
+                port:
+                  number: 8080
+---
+# prettier-ignore
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{.Values.backendingressname}}
+  namespace: {{.Values.backendnamespace}}
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: {{.Values.backendingresshost}}
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: {{.Values.backendservicename}}
+                port:
+                  number: 3000

@@ -1,0 +1,8 @@
+# prettier-ignore
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{.Values.backendconfigmapname}}
+  namespace: {{.Values.backendnamespace}}
+data:
+  port: "3000"

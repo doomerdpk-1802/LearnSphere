@@ -1,0 +1,41 @@
+# prettier-ignore
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Values.dbdeploymentname}}
+spec:
+  replicas: {{.Values.dbreplicas}}
+  selector:
+    matchLabels:
+      app: {{.Values.dbpodselector}}
+  template:
+    metadata:
+      labels:
+        app: {{.Values.dbpodselector}}
+    spec:
+      containers:
+        - name: {{.Values.dbcontainername}}
+          image: "{{.Values.dbimage.repository}}:{{.Values.dbimage.tag}}"
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: {{.Values.dbvolumename}}
+              mountPath: "{{.Values.dbmountpath}}"
+      volumes:
+        - name: {{.Values.dbvolumename}}
+          persistentVolumeClaim:
+            claimName: {{.Values.pvcname}}
+---
+# prettier-ignore
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{.Values.dbservicename}}
+spec:
+  selector:
+    app: {{.Values.dbpodselector}}
+  ports:
+    - protocol: TCP
+      port: 27017
+      targetPort: 27017
+  type: ClusterIP

@@ -29,7 +29,7 @@ jobs:
           JWT_SECRET_USER: ${{ secrets.JWT_SECRET_USER }}
           JWT_SECRET_ADMIN: ${{ secrets.JWT_SECRET_ADMIN }}
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@13.60.168.88 << 'EOF'
+          ssh -o StrictHostKeyChecking=no ubuntu@16.170.230.39 << 'EOF'
             sudo rm -rf LearnSphere
             git clone https://github.com/doomerdpk-1802/LearnSphere.git
             cd LearnSphere

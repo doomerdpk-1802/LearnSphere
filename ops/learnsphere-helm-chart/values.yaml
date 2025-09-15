@@ -1,0 +1,46 @@
+db:
+  pvcname: db-pvc
+  pvstorage: 1Gi
+  dbdeploymentname: db-deployment
+  dbreplicas: 1
+  dbpodselector: db
+  dbcontainername: db
+  dbimage:
+    repository: mongo
+    tag: "latest"
+  dbvolumename: db-storage
+  dbmountpath: /data/db
+  dbservicename: db
+backend:
+  backendnamespace: backendnamespace
+  backendconfigmapname: backendconfigmap
+  backendsecretname: backendsecret
+  backenddeploymentname: backend-deployment
+  backendreplicas: 2
+  backendpodselector: backend
+  backendcontainername: backend
+  backendimage:
+    repository: doomerdpk/learnspherebackend
+    tag: aa3f4ced6e6c91542dd5f2222bef9bd930ce02e1
+  backendsecretvolumename: env-file
+  backendsecretmountpath: /app/secrets
+  backendservicename: backend
+frontend:
+  frontendnamespace: frontendnamespace
+  frontenddeploymentname: frontend-deployment
+  frontendreplicas: 1
+  frontendpodselector: frontend
+  frontendcontainername: frontend
+  frontendimage:
+    repository: doomerdpk/learnspherefrontend
+    tag: 09d270620ce10e3e7fd92fc392128f57c2da7238
+  frontendservicename: frontend
+ingress:
+  frontendingressname: frontendingress
+  backendingressname: backendingress
+  frontendingresshost: learnsphere.deepak.cfd
+  backendingresshost: learnsphere-vercel.api.deepak.cfd
+  frontendnamespace: frontendnamespace
+  frontendservicename: frontend
+  backendnamespace: backendnamespace
+  backendservicename: backend

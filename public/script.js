@@ -134,7 +134,7 @@ async function loadAdminCourses() {
     }
 
     const response = await fetch(
-      "https://learnsphere-vercel.api.deepak.cfd/api/v1/admin/my-courses",
+      "http://learnsphere-vercel.api.deepak.cfd/api/v1/admin/my-courses",
       {
         method: "GET",
         headers: {
@@ -387,7 +387,7 @@ async function deleteCourse(courseId) {
         }
 
         const response = await fetch(
-          "https://learnsphere-vercel.api.deepak.cfd/api/v1/admin/delete-course",
+          "http://learnsphere-vercel.api.deepak.cfd/api/v1/admin/delete-course",
           {
             method: "DELETE",
             headers: {
@@ -491,8 +491,8 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log("[v0] Sending signup request...");
         const endpoint =
           role === "admin"
-            ? "https://learnsphere-vercel.api.deepak.cfd/api/v1/admin/signup"
-            : "https://learnsphere-vercel.api.deepak.cfd/api/v1/user/signup";
+            ? "http://learnsphere-vercel.api.deepak.cfd/api/v1/admin/signup"
+            : "http://learnsphere-vercel.api.deepak.cfd/api/v1/user/signup";
 
         console.log("[v0] Signup endpoint:", endpoint);
         const response = await fetch(endpoint, {
@@ -569,7 +569,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const updateData = { ...courseData, courseId: currentCourseId };
 
           const response = await fetch(
-            "https://learnsphere-vercel.api.deepak.cfd/api/v1/admin/update-course",
+            "http://learnsphere-vercel.api.deepak.cfd/api/v1/admin/update-course",
             {
               method: "PUT",
               headers: {
@@ -602,7 +602,7 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         } else {
           const response = await fetch(
-            "https://learnsphere-vercel.api.deepak.cfd/api/v1/admin/create-course",
+            "http://learnsphere-vercel.api.deepak.cfd/api/v1/admin/create-course",
             {
               method: "POST",
               headers: {
@@ -677,8 +677,8 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log("[v0] Sending login request to backend...");
         const endpoint =
           role === "admin"
-            ? "https://learnsphere-vercel.api.deepak.cfd/api/v1/admin/login"
-            : "https://learnsphere-vercel.api.deepak.cfd/api/v1/user/login";
+            ? "http://learnsphere-vercel.api.deepak.cfd/api/v1/admin/login"
+            : "http://learnsphere-vercel.api.deepak.cfd/api/v1/user/login";
 
         const response = await fetch(endpoint, {
           method: "POST",
@@ -704,8 +704,8 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log("[v0] Making /me request with token...");
             const meEndpoint =
               role === "admin"
-                ? "https://learnsphere-vercel.api.deepak.cfd/api/v1/admin/me"
-                : "https://learnsphere-vercel.api.deepak.cfd/api/v1/user/me";
+                ? "http://learnsphere-vercel.api.deepak.cfd/api/v1/admin/me"
+                : "http://learnsphere-vercel.api.deepak.cfd/api/v1/user/me";
 
             const userResponse = await fetch(meEndpoint, {
               method: "GET",
@@ -837,7 +837,7 @@ async function purchaseCourse(courseId) {
 
   try {
     const response = await fetch(
-      "https://learnsphere-vercel.api.deepak.cfd/api/v1/user/purchase-course",
+      "http://learnsphere-vercel.api.deepak.cfd/api/v1/user/purchase-course",
       {
         method: "POST",
         headers: {
@@ -883,7 +883,7 @@ if (typeof window.loadPurchasedCourses !== "function") {
       }
 
       const response = await fetch(
-        "https://learnsphere-vercel.api.deepak.cfd/api/v1/user/my-purchased-courses",
+        "http://learnsphere-vercel.api.deepak.cfd/api/v1/user/my-purchased-courses",
         {
           method: "GET",
           headers: {
@@ -946,7 +946,7 @@ if (typeof window.loadAvailableCourses !== "function") {
       const token = localStorage.getItem("authToken");
 
       const coursesResp = await fetch(
-        "https://learnsphere-vercel.api.deepak.cfd/api/v1/course/all-courses",
+        "http://learnsphere-vercel.api.deepak.cfd/api/v1/course/all-courses",
         {
           method: "GET",
           headers: {
@@ -961,7 +961,7 @@ if (typeof window.loadAvailableCourses !== "function") {
       let purchasedIds = [];
       if (token) {
         const purchasedResp = await fetch(
-          "https://learnsphere-vercel.api.deepak.cfd/api/v1/user/my-purchased-courses",
+          "http://learnsphere-vercel.api.deepak.cfd/api/v1/user/my-purchased-courses",
           {
             method: "GET",
             headers: {

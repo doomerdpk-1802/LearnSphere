@@ -1,0 +1,56 @@
+# prettier-ignore
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{.Values.backendnamespace}}
+---
+# prettier-ignore
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Values.backenddeploymentname}}
+  namespace: {{.Values.backendnamespace}}
+spec:
+  replicas: {{.Values.backendreplicas}}
+  selector:
+    matchLabels:
+      app: {{.Values.backendpodselector}}
+  template:
+    metadata:
+      labels:
+        app: {{.Values.backendpodselector}}
+    spec:
+      containers:
+        - name: {{.Values.backendcontainername}}
+          image: "{{.Values.backendimage.repository}}:{{.Values.backendimage.tag}}"
+          ports:
+            - containerPort: 3000
+          env:
+            - name: port
+              valueFrom:
+                configMapKeyRef:
+                  name: {{.Values.backendconfigmapname}}
+                  key: port
+          volumeMounts:
+            - name: {{.Values.backendsecretvolumename}}
+              readOnly: true
+              mountPath: "{{.Values.backendsecretmountpath}}"
+      volumes:
+        - name: {{.Values.backendsecretvolumename}}
+          secret:
+            secretName: {{.Values.backendsecretname}}
+---
+# prettier-ignore
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{.Values.backendservicename}}
+  namespace: {{.Values.backendnamespace}}
+spec:
+  selector:
+    app: {{.Values.backendpodselector}}
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+  type: ClusterIP

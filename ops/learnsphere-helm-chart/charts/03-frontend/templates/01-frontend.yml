@@ -1,0 +1,42 @@
+# prettier-ignore
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{.Values.frontendnamespace}}
+---
+# prettier-ignore
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Values.frontenddeploymentname}}
+  namespace: {{.Values.frontendnamespace}}
+spec:
+  replicas: {{.Values.frontendreplicas}}
+  selector:
+    matchLabels:
+      app: {{.Values.frontendpodselector}}
+  template:
+    metadata:
+      labels:
+        app: {{.Values.frontendpodselector}}
+    spec:
+      containers:
+        - name: {{.Values.frontendcontainername}}
+          image: "{{.Values.frontendimage.repository}}:{{.Values.frontendimage.tag}}"
+          ports:
+            - containerPort: 80
+---
+# prettier-ignore
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{.Values.frontendservicename}}
+  namespace: {{.Values.frontendnamespace}}
+spec:
+  selector:
+    app: {{.Values.frontendpodselector}}
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 80
+  type: ClusterIP
