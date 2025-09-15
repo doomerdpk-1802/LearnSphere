@@ -1,12 +1,17 @@
 name: Push frontend and backend images to docker
+
 on:
   push:
     branches: [master]
+
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
@@ -20,7 +25,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Detect changed folder
-        id: folder
+        id: detect
         run: |
           if git diff --name-only ${{ github.sha }}~1 ${{ github.sha }} | grep -q '^src/'; then
             echo "BUILD_SRC=true" >> $GITHUB_ENV
@@ -37,6 +42,8 @@ jobs:
           file: ./docker/Dockerfile-src
           push: true
           tags: doomerdpk/learnspherebackend:${{ github.sha }}
+          cache-from: type=registry,ref=doomerdpk/learnspherebackend:cache
+          cache-to: type=registry,ref=doomerdpk/learnspherebackend:cache,mode=max
 
       - name: Build and push image for Frontend
         if: env.BUILD_PUBLIC == 'true'
@@ -46,21 +53,23 @@ jobs:
           file: ./docker/Dockerfile-public
           push: true
           tags: doomerdpk/learnspherefrontend:${{ github.sha }}
+          cache-from: type=registry,ref=doomerdpk/learnspherefrontend:cache
+          cache-to: type=registry,ref=doomerdpk/learnspherefrontend:cache,mode=max
 
-      - name: Update Helm values in same repo
+      - name: Update Helm values and push to master
         run: |
-          # Install yq if not already available
+          VALUES_FILE="./ops/learnsphere-helm-chart/values.yml"
+
+          # Install yq
           sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
           sudo chmod +x /usr/local/bin/yq
 
-          VALUES_FILE="./ops/learnsphere-helm-chart/values.yml"
-
-          # Update backend image tag only if it was rebuilt
+          # Update backend tag
           if [ "${{ env.BUILD_SRC }}" = "true" ]; then
             yq -i '.backend.backendimage.tag = "${{ github.sha }}"' $VALUES_FILE
           fi
 
-          # Update frontend image tag only if it was rebuilt
+          # Update frontend tag
           if [ "${{ env.BUILD_PUBLIC }}" = "true" ]; then
             yq -i '.frontend.frontendimage.tag = "${{ github.sha }}"' $VALUES_FILE
           fi
@@ -79,5 +88,5 @@ jobs:
             if [ "${{ env.BUILD_SRC }}" = "true" ]; then MSG="$MSG backend=${{ github.sha }}"; fi
             if [ "${{ env.BUILD_PUBLIC }}" = "true" ]; then MSG="$MSG frontend=${{ github.sha }}"; fi
             git commit -m "$MSG"
-            git push origin HEAD:${GITHUB_REF#refs/heads/}
+            git push origin HEAD:master
           fi
