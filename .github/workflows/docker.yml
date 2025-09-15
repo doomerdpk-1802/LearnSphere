@@ -58,7 +58,7 @@ jobs:
 
       - name: Update Helm values and push to master
         run: |
-          VALUES_FILE="./ops/learnsphere-helm-chart/values.yml"
+          VALUES_FILE="./ops/learnsphere-helm-chart/values.yaml"
 
           # Install yq
           sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
