@@ -1,3 +1,4 @@
+// Client Side Routing
 const pages = {
   home: document.getElementById("home-page"),
   signup: document.getElementById("signup-page"),
