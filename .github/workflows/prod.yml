@@ -7,6 +7,7 @@ on:
 
 jobs:
   deploy-app:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     outputs:
       app_deployed: ${{ steps.deploy_app.outcome }}
@@ -29,7 +30,7 @@ jobs:
           JWT_SECRET_USER: ${{ secrets.JWT_SECRET_USER }}
           JWT_SECRET_ADMIN: ${{ secrets.JWT_SECRET_ADMIN }}
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@51.20.131.158 << 'EOF'
+          ssh -o StrictHostKeyChecking=no ubuntu@16.171.52.36 << 'EOF'
             sudo rm -rf LearnSphere
             git clone https://github.com/doomerdpk-1802/LearnSphere.git
             cd LearnSphere
@@ -48,7 +49,7 @@ jobs:
 
   deploy-nginx:
     needs: deploy-app
-    if: ${{ always() }}
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -95,7 +96,7 @@ jobs:
 
   deploy-nginx-vercel:
     needs: deploy-app
-    if: ${{ always() }}
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
