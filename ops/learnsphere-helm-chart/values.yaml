@@ -21,7 +21,7 @@ backend:
   backendcontainername: backend
   backendimage:
     repository: doomerdpk/learnspherebackend
-    tag: a783fba8f7d6b2750d141950c92b99a20ee8b742
+    tag: 4153662d66138790813d469409a252126648044a
   backendsecretvolumename: env-file
   backendsecretmountpath: /app/secrets
   backendservicename: backend
