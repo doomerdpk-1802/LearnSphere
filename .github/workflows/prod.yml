@@ -30,7 +30,7 @@ jobs:
           JWT_SECRET_USER: ${{ secrets.JWT_SECRET_USER }}
           JWT_SECRET_ADMIN: ${{ secrets.JWT_SECRET_ADMIN }}
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@13.53.176.216 << 'EOF'
+          ssh -o StrictHostKeyChecking=no ubuntu@13.60.14.121 << 'EOF'
             sudo rm -rf LearnSphere
             git clone https://github.com/doomerdpk-1802/LearnSphere.git
             cd LearnSphere
@@ -128,7 +128,7 @@ jobs:
         env:
           DOMAIN: learnsphere-vercel.api.deepak.cfd
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@13.60.168.88 << EOF
+          ssh -o StrictHostKeyChecking=no ubuntu@113.60.14.121 << EOF
             cd /home/ubuntu/LearnSphere
             sudo cp ./ops/nginx/nginx-vercel.conf /etc/nginx/nginx.conf
             sudo nginx -t && sudo systemctl reload nginx
