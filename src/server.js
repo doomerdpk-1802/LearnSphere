@@ -37,12 +37,6 @@ async function startApplication() {
 startApplication();
 
 process.on("SIGINT", async () => {
-  console.log("Shutting down server...");
-
-  server.close(() => {
-    console.log("HTTP server closed...");
-  });
-
   await mongoose.connection.close();
   console.log("🔌 MongoDB connection closed");
   process.exit(0);
