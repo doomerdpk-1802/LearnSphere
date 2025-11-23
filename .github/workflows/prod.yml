@@ -1,4 +1,4 @@
-name: Full Deploy Workflow
+name: Start Application on Server
 
 on:
   push:
@@ -7,10 +7,8 @@ on:
 
 jobs:
   deploy-app:
-    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
-    outputs:
-      app_deployed: ${{ steps.deploy_app.outcome }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -23,120 +21,46 @@ jobs:
           ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 
       - name: Deploy to EC2
-        id: deploy_app
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          PORT: ${{ vars.PORT }}
-          JWT_SECRET_USER: ${{ secrets.JWT_SECRET_USER }}
-          JWT_SECRET_ADMIN: ${{ secrets.JWT_SECRET_ADMIN }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@13.60.14.121 << 'EOF'
-            sudo rm -rf LearnSphere
+          ssh -o StrictHostKeyChecking=no ubuntu@16.171.177.92<< EOF
+
+          echo "🔹 Cloning or updating repository"
+          if [ -d "LearnSphere" ]; then
+            cd LearnSphere
+            git pull origin master
+          else
             git clone https://github.com/doomerdpk-1802/LearnSphere.git
             cd LearnSphere
-
-            npm install
-
-            echo "DATABASE_URL=$DATABASE_URL" > .env
-            echo "PORT=$PORT" >> .env
-            echo "JWT_SECRET_USER=$JWT_SECRET_USER" >> .env
-            echo "JWT_SECRET_ADMIN=$JWT_SECRET_ADMIN" >> .env
-
-            cd src
-            npm run stop:pm2 || true
-            npm run start:pm2
-          EOF
-
-  deploy-nginx:
-    needs: deploy-app
-    if: github.actor != 'github-actions[bot]'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Detect if nginx.conf changed
-        id: check_nginx
-        run: |
-          git fetch origin master
-          if git diff --name-only origin/master~1 origin/master | grep -q '^ops/nginx/nginx.conf'; then
-            echo "NGINX_CHANGED=true" >> $GITHUB_ENV
           fi
 
-      - name: Skip if nginx.conf not changed
-        if: env.NGINX_CHANGED != 'true'
-        run: |
-          echo "nginx.conf not changed. Skipping deployment."
+          echo "🔹 Writing .env file"
+          echo "DATABASE_URL=$DATABASE_URL" > .env
+          echo "PORT=$PORT" >> .env
+          echo "JWT_SECRET_USER=$JWT_SECRET_USER" >> .env
+          echo "JWT_SECRET_ADMIN=$JWT_SECRET_ADMIN" >> .env
+          cat .env | sed 's/=.*/=*****/'  
 
-      - name: Setup SSH key
-        if: env.NGINX_CHANGED == 'true'
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+          echo "🔹 Installing dependencies"
+          npm install --legacy-peer-deps
+          npm i pm2
+          npx pm2 stop learnsphere || true
+          npx pm2 start src/server.js --name learnsphere
 
-      - name: Deploy nginx config & SSL
-        if: env.NGINX_CHANGED == 'true'
-        env:
-          DOMAIN: learnsphere.deepak.cfd
-        run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@13.60.14.121 << EOF
-            cd /home/ubuntu/LearnSphere
-            sudo cp ./ops/nginx/nginx.conf /etc/nginx/nginx.conf
-            sudo nginx -t && sudo systemctl reload nginx
+          echo "🔹 Updating NGINX configuration"
+          sudo cp ./ops/nginx/nginx-vercel.conf /etc/nginx/nginx.conf
+          sudo nginx -t
+          sudo systemctl reload nginx
 
-            if ! command -v certbot >/dev/null; then
-              sudo apt-get update -y
-              sudo apt-get install -y certbot python3-certbot-nginx
-            fi
-
-            sudo certbot --nginx -d $DOMAIN --non-interactive --agree-tos --register-unsafely-without-email
-          EOF
-
-  deploy-nginx-vercel:
-    needs: deploy-app
-    if: github.actor != 'github-actions[bot]'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Detect if nginx-vercel.conf changed
-        id: check_nginx_vercel
-        run: |
-          git fetch origin master
-          if git diff --name-only origin/master~1 origin/master | grep -q '^ops/nginx/nginx-vercel.conf'; then
-            echo "NGINX_VERSEL_CHANGED=true" >> $GITHUB_ENV
+          echo "🔹 Setting up SSL (Certbot)"
+          if ! command -v certbot >/dev/null 2>&1; then
+            sudo apt-get update -y
+            sudo apt-get install -y certbot python3-certbot-nginx
           fi
 
-      - name: Skip if nginx-vercel.conf not changed
-        if: env.NGINX_VERSEL_CHANGED != 'true'
-        run: |
-          echo "nginx-vercel.conf not changed. Skipping deployment."
+          sudo certbot --nginx -d "learnsphere-vercel.api.deepak.cfd" --non-interactive --agree-tos --register-unsafely-without-email
 
-      - name: Setup SSH key
-        if: env.NGINX_VERSEL_CHANGED == 'true'
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
-
-      - name: Deploy nginx-vercel config & SSL
-        if: env.NGINX_VERSEL_CHANGED == 'true'
-        env:
-          DOMAIN: learnsphere-vercel.api.deepak.cfd
-        run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@113.60.14.121 << EOF
-            cd /home/ubuntu/LearnSphere
-            sudo cp ./ops/nginx/nginx-vercel.conf /etc/nginx/nginx.conf
-            sudo nginx -t && sudo systemctl reload nginx
-
-            if ! command -v certbot >/dev/null; then
-              sudo apt-get update -y
-              sudo apt-get install -y certbot python3-certbot-nginx
-            fi
-
-            sudo certbot --nginx -d $DOMAIN --non-interactive --agree-tos --register-unsafely-without-email
+          echo "✅ Deployment complete!"
           EOF
