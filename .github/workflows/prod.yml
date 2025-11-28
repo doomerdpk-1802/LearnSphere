@@ -23,7 +23,9 @@ jobs:
       - name: Deploy to EC2
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          PORT: ${{ vars.PORT }}
+          JWT_SECRET_USER: ${{ secrets.JWT_SECRET_USER }}
+          JWT_SECRET_ADMIN: ${{ secrets.JWT_SECRET_ADMIN }}
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@16.171.177.92<< EOF
 
