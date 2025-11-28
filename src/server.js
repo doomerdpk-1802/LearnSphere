@@ -12,7 +12,21 @@ const { courseRouter } = require("./routes/courseRoutes");
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+
+const allowedOrigins = [
+  "https://learnsphere-vercel.deepak.cfd",
+  "http://localhost:3000",
+];
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+  })
+);
 
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/admin", adminRouter);
