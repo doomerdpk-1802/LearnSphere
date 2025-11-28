@@ -61,6 +61,8 @@ jobs:
           fi
 
           sudo certbot --nginx -d "learnsphere-vercel.api.deepak.cfd" --non-interactive --agree-tos --register-unsafely-without-email
+          sudo certbot --nginx -d "bytebrain.api.deepak.cfd" --non-interactive --agree-tos --register-unsafely-without-email
+
 
           echo "✅ Deployment complete!"
           EOF
