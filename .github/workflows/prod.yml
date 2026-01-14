@@ -28,8 +28,13 @@ jobs:
           JWT_SECRET_ADMIN: ${{ secrets.JWT_SECRET_ADMIN }}
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@16.171.177.92<< EOF
+          export NVM_DIR="/home/ubuntu/.nvm"
+          [ -s "\$NVM_DIR/nvm.sh" ] && . "\$NVM_DIR/nvm.sh"
 
-          echo "🔹 Cloning or updating repository"
+          node -v
+          npm -v
+
+          echo "*****Cloning or updating repository"
           if [ -d "LearnSphere" ]; then
             cd LearnSphere
             git pull origin master
@@ -38,25 +43,24 @@ jobs:
             cd LearnSphere
           fi
 
-          echo "🔹 Writing .env file"
+          echo "*****Writing .env file"
           echo "DATABASE_URL=$DATABASE_URL" > .env
           echo "PORT=$PORT" >> .env
           echo "JWT_SECRET_USER=$JWT_SECRET_USER" >> .env
-          echo "JWT_SECRET_ADMIN=$JWT_SECRET_ADMIN" >> .env
-          cat .env | sed 's/=.*/=*****/'  
+          echo "JWT_SECRET_ADMIN=$JWT_SECRET_ADMIN" >> .env 
 
-          echo "🔹 Installing dependencies"
+          echo "*****Installing dependencies"
           npm install --legacy-peer-deps
           npm i pm2
           npx pm2 stop learnsphere || true
           npx pm2 start src/server.js --name learnsphere
 
-          echo "🔹 Updating NGINX config"
+          echo "*****Updating NGINX config"
           sudo cp ./ops/nginx/nginx-vercel.conf /etc/nginx/nginx.conf
           sudo nginx -t
           sudo systemctl reload nginx
 
-          echo "🔹 Setting up SSL (Certbot)"
+          echo "*****Setting up SSL (Certbot)"
           if ! command -v certbot >/dev/null 2>&1; then
             sudo apt-get update -y
             sudo apt-get install -y certbot python3-certbot-nginx
