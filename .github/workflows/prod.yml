@@ -27,7 +27,7 @@ jobs:
           JWT_SECRET_USER: ${{ secrets.JWT_SECRET_USER }}
           JWT_SECRET_ADMIN: ${{ secrets.JWT_SECRET_ADMIN }}
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@16.171.177.92<< EOF
+          ssh -o StrictHostKeyChecking=no ubuntu@13.60.63.159<< EOF
           export NVM_DIR="/home/ubuntu/.nvm"
           [ -s "\$NVM_DIR/nvm.sh" ] && . "\$NVM_DIR/nvm.sh"
 
